@@ -1,2 +1,2 @@
 # school
-Školní projekty WOW
+Školní projekty e^iπ = -1 WOW 
