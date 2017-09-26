@@ -5,7 +5,9 @@
  */
 package temperature;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 
 /**
  *
@@ -19,6 +21,15 @@ public class temperature extends javax.swing.JFrame {
     private class TempInfo{
         public double zeroPoint;
         public double increment;
+        public JLabel label;
+        public JRadioButton button;
+        
+        public TempInfo(double a,double b,JLabel c,JRadioButton d){
+            this.zeroPoint = a;
+            this.increment = b;
+            this.label = c;
+            this.button = d;
+        }
         
         public void update(double a,double b){
             this.zeroPoint = a;
@@ -31,21 +42,19 @@ public class temperature extends javax.swing.JFrame {
     private TempInfo kelvin;
     private TempInfo custom;
     
+    private final TempInfo[] temperatures = {celsius,fahrenheit,kelvin,custom};
     
     public temperature() {
         initComponents();
-        celsius = new TempInfo();
-        celsius.update(273.15, 1);
-        fahrenheit = new TempInfo();
-        fahrenheit.update(255.372222, 5.0/9.0);
-        kelvin = new TempInfo();
-        kelvin.update(0,1);
-        custom = new TempInfo();
+        celsius = new TempInfo(273.15,1,labCel,butCel);
+        fahrenheit = new TempInfo(255.372222, 5.0/9.0,labFar,butFar);
+        kelvin = new TempInfo(0,1,labKel,butKel);
+        custom = new TempInfo(0,0,labCus,butCus);
         updateCustom();
     }
     
     private void updateCustom(){
-        custom.update((double)(int)sliderZeroPoint.getValue(),(double)(int)sliderIncrement.getValue());
+        custom.update((double)spinnerZeroPoint.getValue(),(double)spinnerIncrement.getValue());
         //JOptionPane.showMessageDialog(null,"Hodnota zero:"+(double)(int)sliderZeroPoint.getValue()+"\nHodnota step: "+(double)(int)sliderIncrement.getValue());
     }
     
@@ -62,6 +71,8 @@ public class temperature extends javax.swing.JFrame {
     private void initComponents() {
 
         temperatureSelection = new javax.swing.ButtonGroup();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -78,10 +89,12 @@ public class temperature extends javax.swing.JFrame {
         labFar = new javax.swing.JLabel();
         labKel = new javax.swing.JLabel();
         labCus = new javax.swing.JLabel();
-        sliderZeroPoint = new javax.swing.JSpinner();
+        spinnerZeroPoint = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
-        sliderIncrement = new javax.swing.JSpinner();
+        spinnerIncrement = new javax.swing.JSpinner();
         jLabel7 = new javax.swing.JLabel();
+
+        jScrollPane1.setViewportView(jEditorPane1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -150,19 +163,23 @@ public class temperature extends javax.swing.JFrame {
 
         labCus.setText("jLabel5");
 
-        sliderZeroPoint.setToolTipText("Zadejte kolik Kelvinů je 0 jednotek Vaši stupnice.");
-        sliderZeroPoint.addChangeListener(new javax.swing.event.ChangeListener() {
+        spinnerZeroPoint.setModel(new javax.swing.SpinnerNumberModel(0.0d, null, null, 0.01d));
+        spinnerZeroPoint.setToolTipText("Zadejte kolik Kelvinů je 0 jednotek Vaši stupnice.");
+        spinnerZeroPoint.setDoubleBuffered(true);
+        spinnerZeroPoint.setName(""); // NOI18N
+        spinnerZeroPoint.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sliderZeroPointStateChanged(evt);
+                spinnerZeroPointStateChanged(evt);
             }
         });
 
         jLabel6.setText("Nulový bod:");
 
-        sliderIncrement.setToolTipText("Zadejte o kolik se zvětší teplota ve Vaši jednotce při zvýšení teploty o 1 Kelvin.");
-        sliderIncrement.addChangeListener(new javax.swing.event.ChangeListener() {
+        spinnerIncrement.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.01d, null, 0.01d));
+        spinnerIncrement.setToolTipText("Zadejte o kolik se zvětší teplota ve Vaši jednotce při zvýšení teploty o 1 Kelvin.");
+        spinnerIncrement.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sliderIncrementStateChanged(evt);
+                spinnerIncrementStateChanged(evt);
             }
         });
 
@@ -197,21 +214,25 @@ public class temperature extends javax.swing.JFrame {
                             .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labCus)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(labFar)
-                                    .addComponent(labKel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel7))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(labFar)
+                                            .addComponent(labKel))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel7))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(labCel)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel6)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(spinnerZeroPoint)
+                                    .addComponent(spinnerIncrement, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(labCel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel6)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sliderIncrement, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sliderZeroPoint, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(labCus)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -235,11 +256,11 @@ public class temperature extends javax.swing.JFrame {
                                 .addComponent(jLabel5))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(sliderZeroPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(spinnerZeroPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel6))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(sliderIncrement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(spinnerIncrement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel7))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -279,11 +300,12 @@ public class temperature extends javax.swing.JFrame {
     }//GEN-LAST:event_butCelActionPerformed
 
     private void jSlider1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider1MouseDragged
-        if (butCel.isSelected()){
+        /*if (butCel.isSelected()){
             labCel.setText(Integer.toString(jSlider1.getValue()));
             labFar.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,fahrenheit)));
             labKel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,kelvin)));
             labCus.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,custom)));
+            
         }
         else if (butFar.isSelected()){
             labCel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),fahrenheit,celsius)));
@@ -303,15 +325,27 @@ public class temperature extends javax.swing.JFrame {
             labKel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),custom,kelvin)));
             labCus.setText(Integer.toString(jSlider1.getValue()));
         }
+        */
+        TempInfo selected;
+        for (TempInfo active : temperatures){
+            /*if (active.button.isSelected())
+                selected = active;
+            */
+            JOptionPane.showMessageDialog(null,active.zeroPoint);
+        }
+        /*if (selected == null) return;
+        for (TempInfo active : temperatures){
+            active.label.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),selected,active)));
+        }*/
     }//GEN-LAST:event_jSlider1MouseDragged
 
-    private void sliderZeroPointStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderZeroPointStateChanged
+    private void spinnerZeroPointStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerZeroPointStateChanged
         updateCustom();
-    }//GEN-LAST:event_sliderZeroPointStateChanged
+    }//GEN-LAST:event_spinnerZeroPointStateChanged
 
-    private void sliderIncrementStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderIncrementStateChanged
+    private void spinnerIncrementStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerIncrementStateChanged
         updateCustom();
-    }//GEN-LAST:event_sliderIncrementStateChanged
+    }//GEN-LAST:event_spinnerIncrementStateChanged
 
     /**
      * @param args the command line arguments
@@ -355,6 +389,7 @@ public class temperature extends javax.swing.JFrame {
     private javax.swing.JRadioButton butKel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -362,13 +397,14 @@ public class temperature extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JLabel labCel;
     private javax.swing.JLabel labCus;
     private javax.swing.JLabel labFar;
     private javax.swing.JLabel labKel;
-    private javax.swing.JSpinner sliderIncrement;
-    private javax.swing.JSpinner sliderZeroPoint;
+    private javax.swing.JSpinner spinnerIncrement;
+    private javax.swing.JSpinner spinnerZeroPoint;
     private javax.swing.ButtonGroup temperatureSelection;
     // End of variables declaration//GEN-END:variables
 }
