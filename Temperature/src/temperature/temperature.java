@@ -42,20 +42,38 @@ public class temperature extends javax.swing.JFrame {
     private TempInfo kelvin;
     private TempInfo custom;
     
-    private final TempInfo[] temperatures = {celsius,fahrenheit,kelvin,custom};
+    private TempInfo[] temperatures = new TempInfo[4];
     
     public temperature() {
         initComponents();
         celsius = new TempInfo(273.15,1,labCel,butCel);
+        temperatures[0] = celsius;
         fahrenheit = new TempInfo(255.372222, 5.0/9.0,labFar,butFar);
+        temperatures[1] = fahrenheit;
         kelvin = new TempInfo(0,1,labKel,butKel);
+        temperatures[2] = kelvin;
         custom = new TempInfo(0,0,labCus,butCus);
+        temperatures[3] = custom;
+       
         updateCustom();
     }
     
     private void updateCustom(){
         custom.update((double)spinnerZeroPoint.getValue(),(double)spinnerIncrement.getValue());
         //JOptionPane.showMessageDialog(null,"Hodnota zero:"+(double)(int)sliderZeroPoint.getValue()+"\nHodnota step: "+(double)(int)sliderIncrement.getValue());
+    }
+    
+    private void updateValues(){
+        TempInfo selected = null;
+        for (TempInfo active : temperatures){
+            if (active.button.isSelected())
+                selected = active;
+            //JOptionPane.showMessageDialog(null,active.zeroPoint);
+        }
+        if (selected == null) return;
+        for (TempInfo active : temperatures){
+            active.label.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),selected,active)));
+        }
     }
     
     private double convertTemp(int input,TempInfo in,TempInfo out){
@@ -108,6 +126,7 @@ public class temperature extends javax.swing.JFrame {
         jLabel1.setText("verze 0.1");
 
         jButton2.setText("O");
+        jButton2.setEnabled(false);
 
         jSlider1.setMajorTickSpacing(10);
         jSlider1.setMaximum(50);
@@ -229,7 +248,7 @@ public class temperature extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(spinnerZeroPoint)
-                                    .addComponent(spinnerIncrement, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)))
+                                    .addComponent(spinnerIncrement, javax.swing.GroupLayout.PREFERRED_SIZE, 70, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(labCus)
                                 .addGap(0, 0, Short.MAX_VALUE)))))
@@ -300,51 +319,17 @@ public class temperature extends javax.swing.JFrame {
     }//GEN-LAST:event_butCelActionPerformed
 
     private void jSlider1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider1MouseDragged
-        /*if (butCel.isSelected()){
-            labCel.setText(Integer.toString(jSlider1.getValue()));
-            labFar.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,fahrenheit)));
-            labKel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,kelvin)));
-            labCus.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),celsius,custom)));
-            
-        }
-        else if (butFar.isSelected()){
-            labCel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),fahrenheit,celsius)));
-            labFar.setText(Integer.toString(jSlider1.getValue()));
-            labKel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),fahrenheit,kelvin)));
-            labCus.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),fahrenheit,custom)));
-        }
-        else if (butKel.isSelected()){
-            labCel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),kelvin,celsius)));
-            labFar.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),kelvin,fahrenheit)));
-            labKel.setText(Integer.toString(jSlider1.getValue()));
-            labCus.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),kelvin,custom)));
-        }
-        else if(butCus.isSelected()){
-            labCel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),custom,celsius)));
-            labFar.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),custom,fahrenheit)));
-            labKel.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),custom,kelvin)));
-            labCus.setText(Integer.toString(jSlider1.getValue()));
-        }
-        */
-        TempInfo selected;
-        for (TempInfo active : temperatures){
-            /*if (active.button.isSelected())
-                selected = active;
-            */
-            JOptionPane.showMessageDialog(null,active.zeroPoint);
-        }
-        /*if (selected == null) return;
-        for (TempInfo active : temperatures){
-            active.label.setText(String.format("%.2f",convertTemp(jSlider1.getValue(),selected,active)));
-        }*/
+        updateValues();
     }//GEN-LAST:event_jSlider1MouseDragged
 
     private void spinnerZeroPointStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerZeroPointStateChanged
         updateCustom();
+        updateValues();
     }//GEN-LAST:event_spinnerZeroPointStateChanged
 
     private void spinnerIncrementStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinnerIncrementStateChanged
         updateCustom();
+        updateValues();
     }//GEN-LAST:event_spinnerIncrementStateChanged
 
     /**
