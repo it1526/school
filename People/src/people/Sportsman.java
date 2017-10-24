@@ -5,6 +5,10 @@ public class Sportsman extends Human{
     private int energy = 15000;
     private double steroids = 0;
     
+    public Sportsman(String jmeno, Sex sex) {
+        super(jmeno, sex);
+    }
+    
     public Sportsman(String jmeno, Sex sex,int energy) {
         super(jmeno, sex);
         this.energy = energy;

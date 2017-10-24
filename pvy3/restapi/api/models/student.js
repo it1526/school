@@ -4,11 +4,11 @@ var db=require('../dbconnection'); //reference of dbconnection.js
 var Student = {
 
 getAll: function(callback){
-    return db.query("Select id, jmeno, prijmeni, DATE_FORMAT(datum_narozeni, '%c. %e. %Y') as narozeni, absence, prospech, pohlavi, poznamka, obor, foto, absolvent from student", callback);
+    return db.query("Select id, jmeno, prijmeni, DATE_FORMAT(datum_narozeni, '%c. %e. %Y') as narozeni, absence, prospech, poznamka, obor, foto, absolvent from student", callback);
 },
 
 getById: function(id,callback){
-    return db.query("Select id, jmeno, prijmeni, DATE_FORMAT(datum_narozeni, '%c. %e. %Y') as narozeni, absence, prospech, pohlavi, poznamka, obor, foto, absolvent from student where id=?",[id],callback);
+    return db.query("Select id, jmeno, prijmeni, DATE_FORMAT(datum_narozeni, '%c. %e. %Y') as narozeni, absence, prospech, poznamka, obor, foto, absolvent from student where id=?",[id],callback);
 },
 
 create: function(Student,callback){

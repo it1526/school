@@ -1,5 +1,7 @@
 package people;
 
+import java.awt.Color;
+
 public class Human {
     //Vlastní výčtový datový typ
     public enum Sex{
@@ -12,6 +14,8 @@ public class Human {
     private int weight = 60;
     private double height = 1.75;
     private Sex sex;
+    //Protected = přímý přístup potomkům
+    protected Color eyes = Color.BLUE;
     
     //Metody třídy
     
