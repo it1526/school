@@ -5,6 +5,10 @@
  */
 package people;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import javax.swing.DefaultListModel;
 
 /**
@@ -31,8 +35,13 @@ public class Window extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        removeMenu = new javax.swing.JPopupMenu();
-        createMenu = new javax.swing.JPopupMenu();
+        popupMenu = new javax.swing.JPopupMenu();
+        jMenu1 = new javax.swing.JMenu();
+        removeMenu = new javax.swing.JMenuItem();
+        removeAllMenu = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenuItem();
+        saveMenu = new javax.swing.JMenuItem();
+        openFile = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         people = new javax.swing.JList<>();
         nameTextField = new javax.swing.JTextField();
@@ -40,8 +49,54 @@ public class Window extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         classComboBox = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jMenu1.setText("Remove");
 
+        removeMenu.setText("Remove");
+        removeMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(removeMenu);
+
+        removeAllMenu.setText("Remove All");
+        removeAllMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllMenuActionPerformed(evt);
+            }
+        });
+        jMenu1.add(removeAllMenu);
+
+        popupMenu.add(jMenu1);
+
+        editMenu.setText("Edit");
+        editMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editMenuActionPerformed(evt);
+            }
+        });
+        popupMenu.add(editMenu);
+
+        saveMenu.setText("Export");
+        saveMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMenuActionPerformed(evt);
+            }
+        });
+        popupMenu.add(saveMenu);
+
+        openFile.setText("Import");
+        openFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openFileActionPerformed(evt);
+            }
+        });
+        popupMenu.add(openFile);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        people.setComponentPopupMenu(popupMenu);
         jScrollPane1.setViewportView(people);
 
         nameTextField.setToolTipText("Zadej jméno");
@@ -103,6 +158,72 @@ public class Window extends javax.swing.JFrame {
         model.addElement(clovek);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void removeMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMenuActionPerformed
+        int selectedIndex = people.getSelectedIndex();
+        if(selectedIndex != -1)
+            model.remove(selectedIndex);
+    }//GEN-LAST:event_removeMenuActionPerformed
+
+    private void removeAllMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllMenuActionPerformed
+        model.removeAllElements();
+    }//GEN-LAST:event_removeAllMenuActionPerformed
+
+    private void editMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMenuActionPerformed
+        if(people.getSelectedIndex() > -1){
+            Human person = (Human) model.get(people.getSelectedIndex());
+            PersonDialog dialog = new PersonDialog(this, true, person);
+            if(dialog.showDialog().equalsIgnoreCase("OK")){
+                model.setElementAt(dialog.getPerson(), people.getSelectedIndex());
+            }
+        }
+    }//GEN-LAST:event_editMenuActionPerformed
+
+    private void saveMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuActionPerformed
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("soubor.txt")))
+        {
+            bw.write("class;name;age;height;weight;sex");
+            for(int i = 0;i<model.getSize();i++){
+                bw.newLine();
+                Human person = (Human) model.get(i);
+                bw.write(person.getClass().getSimpleName()+";"+person.getName()+";"+person.getAge()+";"+person.getHeight()+";"+person.getWeight()+";"+person.getSex());
+            }
+            bw.flush();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Do souboru se nepovedlo zapsat.");
+        }
+    }//GEN-LAST:event_saveMenuActionPerformed
+
+    private void openFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openFileActionPerformed
+        try (BufferedReader br = new BufferedReader(new FileReader("soubor.txt"))){
+                String s;
+                br.readLine();
+                model.clear();
+                Human person;
+                while ((s = br.readLine()) != null){
+                    String[] attr = s.split(";");
+                    if(attr[0] == "Sportsman")
+                        person = new Sportsman();
+                    else
+                        person = new Human();
+                    person.setName(attr[1]);
+                    person.setAge(Integer.parseInt(attr[2]));
+                    person.setHeight(Double.parseDouble(attr[3]));
+                    person.setWeight(Integer.parseInt(attr[4]));
+                    if(attr[5] == "MALE")
+                        person.setSex(Human.Sex.MALE);
+                    else
+                        person.setSex(Human.Sex.FEMALE);
+                    model.addElement(person);
+                }
+        }
+        catch (Exception e)
+        {
+                System.err.println("Chyba při četení ze souboru.");
+        }
+    }//GEN-LAST:event_openFileActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -140,12 +261,17 @@ public class Window extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> classComboBox;
-    private javax.swing.JPopupMenu createMenu;
+    private javax.swing.JMenuItem editMenu;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField nameTextField;
+    private javax.swing.JMenuItem openFile;
     private javax.swing.JList<String> people;
-    private javax.swing.JPopupMenu removeMenu;
+    private javax.swing.JPopupMenu popupMenu;
+    private javax.swing.JMenuItem removeAllMenu;
+    private javax.swing.JMenuItem removeMenu;
+    private javax.swing.JMenuItem saveMenu;
     // End of variables declaration//GEN-END:variables
 }

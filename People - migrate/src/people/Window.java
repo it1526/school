@@ -130,8 +130,8 @@ public class Window extends javax.swing.JFrame {
         Human clovek;
         if(selectPerson.getSelectedItem() == "Human")
            clovek = new Human(nameTextField.getText());
-        else 
-            clovek = new Sportsman(nameTextField.getText());
+        else
+           clovek = new Sportsman(nameTextField.getText());
         model.addElement(clovek);
     }//GEN-LAST:event_addButtonActionPerformed
 

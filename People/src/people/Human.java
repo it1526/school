@@ -20,6 +20,9 @@ public class Human {
     //Metody třídy
     
     //Konstruktor třídy
+    public Human(){
+        
+    }
     public Human(String jmeno,Sex sex){
         this.name = jmeno;
         this.sex = sex;
@@ -33,12 +36,13 @@ public class Human {
     
     @Override
     public String toString(){
-       String output =  "My name's "+this.name+".\n"; 
+       String output = this.getName() + " [Human]";
+       /*String output =  "My name's "+this.name+".\n"; 
        output += "I'm "+this.sex+".\n";
        output += "I measure "+this.height+" meters tall.\n";
        output += "I weigh "+this.weight+" kilograms.\n";
        output += "I'm "+this.age+" years old.\n";
-       output += "My BMI is "+this.getBMI()+".";
+       output += "My BMI is "+this.getBMI()+".";*/
        return output;
     }
     

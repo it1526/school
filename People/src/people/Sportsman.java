@@ -5,6 +5,9 @@ public class Sportsman extends Human{
     private int energy = 15000;
     private double steroids = 0;
     
+    public Sportsman(){
+        
+    }
     public Sportsman(String jmeno, Sex sex) {
         super(jmeno, sex);
     }
@@ -43,7 +46,7 @@ public class Sportsman extends Human{
 
     @Override
     public String toString() {
-        return super.toString()+"\nSportsman{" + "energy=" + energy + ", steroids=" + steroids + '}';
+        return super.toString() + " [Sportsman]";
     }
     
     

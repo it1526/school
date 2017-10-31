@@ -1,0 +1,2 @@
+class;name;age;height;weight;sex
+Sportsman;asdfasdfasdf;20;1.75;60;MALE
