@@ -6,6 +6,7 @@
 package elite;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -34,21 +35,53 @@ public class ShipMenu extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        menuDelete = new javax.swing.JMenuItem();
+        menuDeleteAll = new javax.swing.JMenuItem();
+        menuEdit = new javax.swing.JMenuItem();
+        buttonExit = new javax.swing.JButton();
+        paneShips = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jButton2 = new javax.swing.JButton();
+        buttonAdd = new javax.swing.JButton();
+
+        jPopupMenu1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        menuDelete.setText("Delete");
+        menuDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDeleteActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuDelete);
+
+        menuDeleteAll.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
+        menuDeleteAll.setText("Delete all");
+        menuDeleteAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDeleteAllActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuDeleteAll);
+
+        menuEdit.setText("Edit");
+        jPopupMenu1.add(menuEdit);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jButton1.setText("Exit");
-
-        jScrollPane1.setViewportView(jList1);
-
-        jButton2.setText("Add");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonExit.setText("Exit");
+        buttonExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                buttonExitActionPerformed(evt);
+            }
+        });
+
+        jList1.setComponentPopupMenu(jPopupMenu1);
+        paneShips.setViewportView(jList1);
+
+        buttonAdd.setText("Add");
+        buttonAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddActionPerformed(evt);
             }
         });
 
@@ -59,35 +92,65 @@ public class ShipMenu extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(paneShips, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                    .addComponent(buttonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+                .addComponent(paneShips, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(buttonAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addComponent(buttonExit)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
         model.addElement(new Ship());
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_buttonAddActionPerformed
+
+    private void buttonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
+        dispose();
+    }//GEN-LAST:event_buttonExitActionPerformed
+
+    private void menuDeleteAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDeleteAllActionPerformed
+        if(JOptionPane.showConfirmDialog(this,"Are you sure?","Warning",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
+            model.clear();
+        /*int i;
+        int x;
+        String response;
+        for(i=0;;i++){
+            response = "Are you";
+            for(x=0;x<i;x++)
+                response += " really";
+            response += " sure?";
+            if(JOptionPane.showConfirmDialog(this,response,"Warning",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)
+                break;
+        }*/
+    }//GEN-LAST:event_menuDeleteAllActionPerformed
+
+    private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDeleteActionPerformed
+        int selectedIndex = jList1.getSelectedIndex();
+        if(selectedIndex != -1)
+            model.remove(selectedIndex);
+    }//GEN-LAST:event_menuDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton buttonAdd;
+    private javax.swing.JButton buttonExit;
     private javax.swing.JList<String> jList1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JMenuItem menuDelete;
+    private javax.swing.JMenuItem menuDeleteAll;
+    private javax.swing.JMenuItem menuEdit;
+    private javax.swing.JScrollPane paneShips;
     // End of variables declaration//GEN-END:variables
 }
