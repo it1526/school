@@ -13,24 +13,24 @@ import javax.swing.JOptionPane;
  *
  * @author student
  */
-public class ShipMenu extends javax.swing.JDialog {
+public class PortMenu extends javax.swing.JDialog {
 
     /**
      * Creates new form ShipMenu
      */
     private DefaultListModel model;
     private java.awt.Frame workaround;
-    private ArrayList<Ship> ships;
     private ArrayList<Port> ports;
+    private ArrayList<Ship> ships;
     
-    public ShipMenu(java.awt.Frame parent, boolean modal,ArrayList<Ship> ships,ArrayList<Port> ports) {
+    public PortMenu(java.awt.Frame parent, boolean modal,ArrayList<Ship> ships,ArrayList<Port> ports) {
         super(parent, modal);
         initComponents();
         model = new DefaultListModel();
         this.ships = ships;
         this.ports = ports;
-        for(Ship ship : this.ships)
-            model.addElement(ship);
+        for(Port port : this.ports)
+            model.addElement(port);
         jList1.setModel(model);
         workaround = parent;
     }
@@ -55,6 +55,7 @@ public class ShipMenu extends javax.swing.JDialog {
         jList1 = new javax.swing.JList<>();
         buttonAdd = new javax.swing.JButton();
 
+        jPopupMenu1.setToolTipText("");
         jPopupMenu1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         menuAdd.setText("Add new");
@@ -92,7 +93,7 @@ public class ShipMenu extends javax.swing.JDialog {
         jPopupMenu1.add(menuDeleteAll);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Ships");
+        setTitle("Ports");
 
         buttonExit.setText("Exit");
         buttonExit.addActionListener(new java.awt.event.ActionListener() {
@@ -139,15 +140,15 @@ public class ShipMenu extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddActionPerformed
-        model.addElement(new Ship());
+        model.addElement(new Port());
     }//GEN-LAST:event_buttonAddActionPerformed
 
     private void buttonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
-        ships.clear();
-        Ship[] helpArray = new Ship[model.getSize()];
+        ports.clear();
+        Port[] helpArray = new Port[model.getSize()];
         model.copyInto(helpArray);
-        for (Ship ship : helpArray)
-            ships.add(ship);
+        for (Port port : helpArray)
+            ports.add(port);
         dispose();
     }//GEN-LAST:event_buttonExitActionPerformed
 
@@ -174,11 +175,11 @@ public class ShipMenu extends javax.swing.JDialog {
     }//GEN-LAST:event_menuDeleteActionPerformed
 
     private void menuAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAddActionPerformed
-        model.addElement(new Ship());
+        model.addElement(new Port());
     }//GEN-LAST:event_menuAddActionPerformed
 
     private void menuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditActionPerformed
-        ShipEdit dialog = new ShipEdit(workaround,true,(Ship)model.getElementAt(jList1.getSelectedIndex()),ports);
+        PortEdit dialog = new PortEdit(workaround,true,(Port)model.getElementAt(jList1.getSelectedIndex()),ships);
         dialog.setVisible(true);
     }//GEN-LAST:event_menuEditActionPerformed
 

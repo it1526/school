@@ -5,7 +5,17 @@
  */
 package elite;
 
-import javax.swing.DefaultListModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,11 +23,12 @@ import javax.swing.DefaultListModel;
  */
 public class Menu extends javax.swing.JFrame {
 
-    private DefaultListModel ships = new DefaultListModel();
-    private DefaultListModel commodities = new DefaultListModel();
-    private DefaultListModel starPorts = new DefaultListModel();
+    public ArrayList<Ship> ships;
+    public ArrayList<Port> ports;
     
     public Menu() {
+        this.ports = new ArrayList<>();
+        this.ships = new ArrayList<>();
         initComponents();
     }
 
@@ -32,10 +43,12 @@ public class Menu extends javax.swing.JFrame {
 
         buttonExit = new javax.swing.JButton();
         buttonShips = new javax.swing.JButton();
-        buttonCommodities = new javax.swing.JButton();
         buttonPorts = new javax.swing.JButton();
+        buttonImport = new javax.swing.JToggleButton();
+        buttonExport = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Elite Dangerous Tool");
 
         buttonExit.setText("Exit");
         buttonExit.addActionListener(new java.awt.event.ActionListener() {
@@ -51,9 +64,26 @@ public class Menu extends javax.swing.JFrame {
             }
         });
 
-        buttonCommodities.setText("Commodities");
-
         buttonPorts.setText("Star ports");
+        buttonPorts.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPortsActionPerformed(evt);
+            }
+        });
+
+        buttonImport.setText("Import");
+        buttonImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonImportActionPerformed(evt);
+            }
+        });
+
+        buttonExport.setText("Export");
+        buttonExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonExportActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -63,11 +93,13 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(buttonImport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonExport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonExit))
                     .addComponent(buttonShips, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(buttonCommodities, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                    .addComponent(buttonPorts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buttonPorts, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -76,11 +108,12 @@ public class Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(buttonShips)
                 .addGap(18, 18, 18)
-                .addComponent(buttonCommodities)
-                .addGap(18, 18, 18)
                 .addComponent(buttonPorts)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
-                .addComponent(buttonExit)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 192, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonExit)
+                    .addComponent(buttonImport)
+                    .addComponent(buttonExport))
                 .addContainerGap())
         );
 
@@ -92,9 +125,89 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonExitActionPerformed
 
     private void buttonShipsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonShipsActionPerformed
-        ShipMenu dialog = new ShipMenu(this,true,ships);
+        ShipMenu dialog = new ShipMenu(this,true,ships,ports);
         dialog.setVisible(true);
     }//GEN-LAST:event_buttonShipsActionPerformed
+
+    private void buttonPortsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPortsActionPerformed
+        PortMenu dialog = new PortMenu(this,true,ships,ports);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_buttonPortsActionPerformed
+
+    private void buttonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportActionPerformed
+        Gson gson = new Gson();
+        String[] jsonHelper = {
+            gson.toJson(ships),
+            gson.toJson(ports)
+        };
+        String json = gson.toJson(jsonHelper);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data.json")))
+        {
+            bw.write(json);
+            bw.flush();
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(this,"While saving an error occured.","Fatal error",JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+    }//GEN-LAST:event_buttonExportActionPerformed
+
+    private void buttonImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportActionPerformed
+        try (BufferedReader br = new BufferedReader(new FileReader("data.json"))){
+            String sHelper;
+            String s = "";
+            while(((sHelper = br.readLine()) != null))
+                s += sHelper;
+                
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser(); 
+            String[] json = gson.fromJson(s,String[].class);
+            JsonArray jArray;
+            JsonObject jObject;
+            
+            jArray = parser.parse(json[1]).getAsJsonArray();
+            ports = new ArrayList<>();
+            Port port;
+            
+            for(JsonElement element : jArray){
+                port = new Port();
+                jObject = element.getAsJsonObject();
+                port.setName(jObject.get("name").getAsString());
+                port.setxCoordinate(jObject.get("xCoordinate").getAsDouble());
+                port.setyCoordinate(jObject.get("yCoordinate").getAsDouble());
+                port.setzCoordinate(jObject.get("zCoordinate").getAsDouble());
+                port.setType(Port.Type.valueOf(jObject.get("type").getAsString()));
+                ports.add(port);
+            }
+            
+            jArray = parser.parse(json[0]).getAsJsonArray();
+            ships = new ArrayList<>();
+            Ship ship;
+            
+            for(JsonElement element : jArray){
+                ship = new Ship();
+                jObject = element.getAsJsonObject();
+                ship.setName(jObject.get("name").getAsString());
+                ship.setComment(jObject.get("comment").getAsString());
+                ship.setShipType(Ship.ShipType.valueOf(jObject.get("shipType").getAsString()));
+                if(jObject.get("homePort") != null){
+                    for(Port port2 : ports)
+                        if(port2.getName().equals(jObject.get("homePort").getAsJsonObject().get("name").getAsString()))
+                            ship.setHomePort(port2);
+                }
+                else
+                    ship.setHomePort(null);
+                ships.add(ship);
+            }
+        
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(this,"While reading an error occured.","Fatal error",JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+    }//GEN-LAST:event_buttonImportActionPerformed
 
     /**
      * @param args the command line arguments
@@ -132,8 +245,9 @@ public class Menu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonCommodities;
     private javax.swing.JButton buttonExit;
+    private javax.swing.JToggleButton buttonExport;
+    private javax.swing.JToggleButton buttonImport;
     private javax.swing.JButton buttonPorts;
     private javax.swing.JButton buttonShips;
     // End of variables declaration//GEN-END:variables
