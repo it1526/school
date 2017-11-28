@@ -14,12 +14,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
 
 /**
  *
  * @author student
  */
-public class Grafika {
+public class Grafika implements MouseListener, MouseMotionListener {
     private JFrame window;
     private JButton drawButton;
     private JLabel headLabel;
@@ -38,7 +42,6 @@ public class Grafika {
         headLabel.setForeground(Color.LIGHT_GRAY);
         headLabel.setOpaque(true);
         headLabel.setHorizontalAlignment(JLabel.CENTER);
-        
         drawButton = new JButton(title);
         drawButton.addActionListener(new ActionListener() {
             @Override
@@ -61,6 +64,11 @@ public class Grafika {
     
     public static void main(String[] args) {
         new Grafika("Grafika v Javě",640,480);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent me) {
+       //asdasd
     }
     
 }

@@ -24,7 +24,7 @@ public class Ship {
     
     @Override
     public String toString(){
-        if(name == "")
+        if("".equals(name))
             return "Unnamed "+shipType;
         else
             return name+" ("+shipType+")";
