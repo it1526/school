@@ -35,8 +35,11 @@ const Hand& Player::getHandAt(int hand) const{
     return this->hands[hand];
 }
 
-const Hand& Player::getPlayingHand() const{
-    return this->hands[playingHand];
+bool Player::isPlayingHand(const Hand& hand) const{
+    if(active)
+        return (hands[playingHand] == hand);
+    else
+        return false;
 }
 
 const Hand& Player::operator[] (int hand) const{

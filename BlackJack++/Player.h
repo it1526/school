@@ -31,7 +31,7 @@ public:
     int getAccount() const;
     int getNumberOfHands() const;
     const Hand& getHandAt(int) const;
-    const Hand& getPlayingHand() const;
+    bool isPlayingHand(int) const;
     const Hand& operator [](int) const;
     
     void reset();

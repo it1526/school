@@ -14,16 +14,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
 
 /**
  *
  * @author student
  */
-public class Grafika implements MouseListener, MouseMotionListener {
+public class Grafika{
     private JFrame window;
     private JButton drawButton;
     private JLabel headLabel;
@@ -46,15 +42,16 @@ public class Grafika implements MouseListener, MouseMotionListener {
         drawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                System.out.println("Čudlík čudlíkuje!");
-                int x = (int) Math.floor(Math.random()*platno.getWidth());
-                int y = (int) Math.floor(Math.random()*platno.getHeight());
-                platno.setPoint(x, y);
+                int x;
+                int y;
+                x = (int) Math.floor(Math.random()*platno.getWidth());
+                y = (int) Math.floor(Math.random()*platno.getHeight());
+                platno.setPoint(x, y,true);
                 platno.repaint();
             }
         });
         platno = new Platno();
-        
+        platno.init();
         Container pane = window.getContentPane();
         pane.add(headLabel,BorderLayout.PAGE_START);
         pane.add(drawButton,BorderLayout.PAGE_END);
@@ -66,9 +63,4 @@ public class Grafika implements MouseListener, MouseMotionListener {
         new Grafika("Grafika v Javě",640,480);
     }
 
-    @Override
-    public void mouseReleased(MouseEvent me) {
-       //asdasd
-    }
-    
 }

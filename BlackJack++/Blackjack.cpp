@@ -16,17 +16,21 @@
 #include "Player.h"
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include "Card.h"
 
 Blackjack::Blackjack() {
 }
 
-Blackjack::Blackjack(int players, int shoeSize, int min, int max, bool hitSoft17){
+Blackjack::Blackjack(int players, int shoeSize, int min, int max,int startingBallance, float shufflePercent, bool hitSoft17){
     this->shoeSize = shoeSize;
     this->min = min;
     this->max = max;
     this->hitSoft17 = hitSoft17;
+    this->shufflePercent = shufflePercent;
     this->shuffle();
+    for(int i = 0;i<players;i++)
+        this->players.emplace_back(startingBallance);
 }
 
 Blackjack::Blackjack(const Blackjack& orig) {
@@ -34,17 +38,31 @@ Blackjack::Blackjack(const Blackjack& orig) {
 
 void Blackjack::game(){
     std::cout << "Vitejte v BlackJacku";
-    
+    int i;
+    Choice playersChoice;
+    std::string query;
+    int validChoices;
     do{
         this->reset();
         
-        for(Player player : players){
-            
+        printBettingState();
+        for(i = 0;i<players.size();i++){
+            query << "Hraci " << i+1 << "., zadejte vysi vasi sazky:";
+            players[i].setBet(inputInt(min,players[i].getAccount() < max ? players[i].getAccount() : max),query);
         }
         for(Player player : players){
             do{
                 printPlayingState(player);
-                Choice playersChoice = getChoice(player.getValidChoices());
+                validChoices = player.getValidChoices();
+                std::cout << "H - Hit\nS - Stand\n";
+                if(Split & validChoices)
+                    std::cout << "P - Split\n";
+                if(Double & validChoices)
+                    std::cout << "D - Double\n";
+                if(Surrender & validChoices)
+                    std::cout << "R - Surrender\n";
+                
+                playersChoice = getChoice(validChoices);
                 switch(playersChoice){
                     case Hit:
                         player.hit();
@@ -64,6 +82,9 @@ void Blackjack::game(){
                 }
                 
             }while(player.isActive());
+        }
+        while(dealerAI()){
+            
         }
         std::cout << "Chcete ukonict hru?\n";
     }while(this->inputChar() != 'y');
@@ -99,7 +120,14 @@ Choice Blackjack::getChoice(int validChoices){
     }
 }
 
-void Blackjack::printPlayingState(const Player& player) const{
+void Blackjack::printBettingState() const{
+    std::cout << "Vyse kont hracu: \n";
+    for(int i=0; i < players.size();i++){
+        std::cout << "Hrac " << (i+1) << ": " << players[i].getAccount() << "\n";
+    }
+}
+
+void Blackjack::printPlayingState() const{
     std::cout << "Vase konto: " << player.getAccount();
     
     std::cout << "\n Dealer: " << Card::setChar[dealer[0].getSet()] << dealer[0].getValue() << " ??\n\n";
@@ -111,20 +139,12 @@ void Blackjack::printPlayingState(const Player& player) const{
                 std::cout << Card::setChar[card.getSet()] << card.getValue() << " ";
             }
             std::cout << " | " << hand.getValueString();
-            if (hand == playerDisplay.getPlayingHand())
+            if (playerDisplay.isPlayingHand(hand))
                 std::cout << " <<<";
             std::cout << "\n";
         }
         i++;
     }
-
-    std::cout << "H - Hit\nS - Stand\n";
-    if(player.canSplit())
-        std::cout << "P - Split\n";
-    if(player.canDouble())
-        std::cout << "D - Double\n";
-    if(player.canSurrender())
-        std::cout << "R - Surrender\n";
 }
 
 char Blackjack::inputChar(){
@@ -186,7 +206,7 @@ void Blackjack::shuffle(){
     std::random_shuffle(this->shoe.begin(),this->shoe.end());
 }
 
-void Blackjack::dealerAI(){
+bool Blackjack::dealerAI(){
     
 }
 

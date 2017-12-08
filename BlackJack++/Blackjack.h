@@ -25,7 +25,7 @@ typedef enum{
 class Blackjack {
 public:
     Blackjack();
-    Blackjack(int,int,int,int,bool);
+    Blackjack(int,int,int,int,int,float,bool);
     Blackjack(const Blackjack& orig);
     
     void game();
@@ -38,8 +38,9 @@ private:
     bool vycistitBuffer();
     char inputChar();
     Choice getChoice(int);
-    void printPlayingState(const Player&) const;
-    void dealerAI();
+    void printPlayingState() const;
+    void printBettingState() const;
+    bool dealerAI();
     
     std::vector<Player> players;
     std::vector<Card> shoe;
