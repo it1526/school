@@ -5,10 +5,14 @@
  */
 package grafika;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,107 +20,67 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
-
-class Bod {
+public class Platno extends JComponent 
+    implements MouseListener, 
+               MouseMotionListener, 
+               KeyListener,
+               ActionListener
+    {
     
-    private Point point;
-    private Color color;
-    private int radius;
-    private boolean fill;
-    public Bod(int x,int y,boolean fill){
-        point = new Point(x,y);
-        int red = (int)Math.floor(Math.random() *256);
-        int green = (int)Math.floor(Math.random() *256);
-        int blue = (int)Math.floor(Math.random() *256);
-        color = new Color(red,green,blue);
-        radius = (int)Math.floor(Math.random() *100)+50;
-        this.fill = fill;
-    }
+    private Point p = new Point(100,100);
+    ArrayList<Tvar> points;
+    private Timer timer;
     
-    public void setPoint(int x,int y){
-        point.setLocation(x, y);
+    public Platno() {
+        this.points = new ArrayList();
     }
     
-    public boolean isFill() {
-        return fill;
-    }
-
-    public void setFill(boolean fill) {
-        this.fill = fill;
-    }
-    
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public int getRadius() {
-        return radius;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
-    
-    
-}
-
-public class Platno extends JComponent implements MouseListener, MouseMotionListener,KeyListener{
-    public Platno(){
-        
-    }
-    
-    private Point p;
-    ArrayList<Bod> points = new ArrayList<>();
-    
-    public void setPoint(int x,int y,boolean fill){
-        p = new Point(x,y);
-        points.add(new Bod(x,y,fill));
-    }
-    
-    public void init(){
+    public void init() {
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.addKeyListener(this);
         this.setFocusable(true);
+        timer = new Timer(50, (ActionListener) this);
+        timer.start();
     }
     
-    public void drawPoints(Graphics g){
-        for(Bod bod : points){
-            g.setColor(bod.getColor());
-            if(bod.isFill())
-                g.fillOval(bod.getPoint().x-(bod.getRadius()/2),bod.getPoint().y-(bod.getRadius()/2) ,bod.getRadius() ,bod.getRadius() );
-            else
-                g.drawOval(bod.getPoint().x-(bod.getRadius()/2),bod.getPoint().y-(bod.getRadius()/2) ,bod.getRadius() ,bod.getRadius() );
+    public void setPoint(int x, int y, boolean fill) {
+        p = new Point(x,y);
+        this.points.add(new Kruh(p.x, p.y, fill));
+    }
+    
+    public void drawPoints(Graphics g) {
+        for (Tvar b: this.points) {
+            b.paint(g);
         }
     }
     
-    public void drawAxis(Graphics g,Dimension size,Point p){
-        g.setColor(Color.GRAY);
-        g.drawLine(0,p.y,size.width,p.y);
-        g.drawLine(p.x,0,p.x,size.height);
+    public void drawAxis(Graphics g, Dimension size) {
+        Graphics2D g2d = (Graphics2D) g;
+        float tloustka = 1f;
+        float miterLimit = 20f;
+        float[] dashPattern = {5f};
+        float dashPhase = 8f;
+        BasicStroke stroke = new BasicStroke(tloustka, 
+                BasicStroke.CAP_BUTT, 
+                BasicStroke.JOIN_MITER,
+                miterLimit, dashPattern, dashPhase);
+        g2d.setStroke(stroke);
+        
+        g2d.setColor(Color.gray);
+        g2d.drawLine(0, p.y, size.width, p.y);        
+        g2d.drawLine(p.x, 0, p.x, size.height);        
     }
     
     @Override
-    public void paint(Graphics g){
-        g.setColor(Color.WHITE);
+    public void paint(Graphics g) {
+        g.setColor(Color.white);
         Dimension size = this.getSize();
-        g.fillRect(0,0,size.width,size.height);
-        drawAxis(g,size,p);
+        g.fillRect(0, 0, size.width, size.height);
+        drawAxis(g, size);
         drawPoints(g);
-        
     }
 
     @Override
@@ -153,7 +117,9 @@ public class Platno extends JComponent implements MouseListener, MouseMotionList
 
     @Override
     public void mouseMoved(MouseEvent me) {
-        p.setLocation(me.getX(),me.getY());
+        System.out.println("x" + me.getX());
+        System.out.println("y" + me.getY());
+        //this.setPoint(me.getX(),me.getY(),true);
         this.repaint();
     }
 
@@ -163,22 +129,40 @@ public class Platno extends JComponent implements MouseListener, MouseMotionList
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        System.out.println("LELELE");
-        Bod bod = points.get(0);
-        Point point = bod.getPoint();
-        switch(ke.getKeyCode()) {
+        Tvar b = this.points.get(this.points.size()-1);
+        switch (ke.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                bod.setPoint(point.x-1, point.y);
+                System.out.println("vlevo");
+                p.x--;                 
+                b.getPoint().x--;
                 break;
             case KeyEvent.VK_RIGHT:
-                bod.setPoint(point.x+1, point.y);
+                System.out.println("vpravo");
+                p.x++;
+                b.getPoint().x++;
                 break;
             case KeyEvent.VK_UP:
-                bod.setPoint(point.x, point.y-1);
+                System.out.println("nahoru");
+                p.y--;
+                b.getPoint().y--;
                 break;
             case KeyEvent.VK_DOWN:
-                bod.setPoint(point.x, point.y+1);
-                break;
+                System.out.println("dolu");
+                p.y++;
+                b.getPoint().y++;
+                break;                
+            case KeyEvent.VK_INSERT:
+                System.out.println("vlozit");
+                this.setPoint(p.x, p.y, true);
+                break;                
+            case KeyEvent.VK_PAGE_DOWN:
+                System.out.println("hubni");
+                if (b.getRadius() > 3) b.setRadius(b.getRadius()-1);
+                break;                
+            case KeyEvent.VK_PAGE_UP:
+                System.out.println("tloustni");
+                if (b.getRadius() < 100) b.setRadius(b.getRadius()+1);
+                break;                
         }
         this.repaint();
     }
@@ -186,4 +170,13 @@ public class Platno extends JComponent implements MouseListener, MouseMotionList
     @Override
     public void keyReleased(KeyEvent ke) {
     }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        for(Tvar t: this.points){
+            t.animate(this);
+        }
+        repaint();
+    }
+
 }
