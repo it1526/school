@@ -43,15 +43,18 @@ void Blackjack::game(){
     std::string query;
     int validChoices;
     do{
-        this->reset();
+        this->reset(); //Faze 0: Reset; připraví pamět pro hraní.
         
+        // Fáze 1: Nastaví sázky všech hráčů.
         printBettingState();
         for(i = 0;i<players.size();i++){
             query << "Hraci " << i+1 << "., zadejte vysi vasi sazky:";
             players[i].setBet(inputInt(min,players[i].getAccount() < max ? players[i].getAccount() : max),query);
         }
+        
         for(Player player : players){
             do{
+                std::cout << "Vase konto: " << player.getAccount();
                 printPlayingState(player);
                 validChoices = player.getValidChoices();
                 std::cout << "H - Hit\nS - Stand\n";
@@ -80,12 +83,18 @@ void Blackjack::game(){
                         player.surrender();
                         break;
                 }
-                
             }while(player.isActive());
         }
         while(dealerAI()){
-            
+            printPlayingState();
         }
+        
+        for(Player player : players){
+            for (Hand hand : player){
+                
+            }
+        }
+        
         std::cout << "Chcete ukonict hru?\n";
     }while(this->inputChar() != 'y');
 }
@@ -97,6 +106,34 @@ bool Blackjack::vycistitBuffer(){
         neplatnyVstup = true;
     }
     return neplatnyVstup;
+}
+
+// Vrátí jestli stav ruky vůči pravé; tedy L ? R, ? ∈ {>,<,=}
+GameState getState(const Hand& left,const Hand& right){
+    const State lState = left.getState();
+    const State rState = right.getState();
+    
+    const int lVal = left.getValue() > left.getSoftValue() ? left.getValue() : left.getSoftValue();
+    const int rVal = right.getValue() > right.getSoftValue() ? right.getValue() : right.getSoftValue();
+    
+    if(lState == BUST)
+        return Lose;
+    if (rState == BUST) //Víme že lState nemůže být BUST.
+        return Win;
+    if(lState == BLACKJACK)
+        if(rState == BLACKJACK)
+            return Push;
+        else
+            return Win;
+    if(rState == BLACKJACK) //Víme že lState nemůže být BLACKJACK.
+        return Lose;
+    
+    if(lVal > rVal)
+        return Win;
+    if(lVal == rVal)
+        return Push;
+    return Lose;
+    
 }
 
 Choice Blackjack::getChoice(int validChoices){
@@ -128,8 +165,6 @@ void Blackjack::printBettingState() const{
 }
 
 void Blackjack::printPlayingState() const{
-    std::cout << "Vase konto: " << player.getAccount();
-    
     std::cout << "\n Dealer: " << Card::setChar[dealer[0].getSet()] << dealer[0].getValue() << " ??\n\n";
     int i = 1;
     for(Player playerDisplay : this->players){

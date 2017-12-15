@@ -22,6 +22,11 @@ typedef enum{
     Hit= 0b1,Stand = 0b10,Double = 0b100,Split=0b1000,Surrender=0b100000
 }Choice;
 
+
+typedef enum{
+    Win,Push,Lose
+}GameState;
+
 class Blackjack {
 public:
     Blackjack();
