@@ -6,6 +6,9 @@
 package grafika;
 
 import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -13,10 +16,13 @@ import java.awt.Graphics;
  */
 public class Kruh extends Tvar{
     private int radius;
-    
+    private Image image;
     public Kruh(int x,int y,boolean fill){
         super(x,y,fill);
         radius = (int)Math.floor(Math.random() *100)+50;
+        try{
+            image = ImageIO.read(this.getClass().getResource(""));
+        }catch(IOException ex){}
     }
     
     public int getRadius() {
@@ -33,10 +39,12 @@ public class Kruh extends Tvar{
             g.fillOval(this.getPoint().x - this.getRadius(), 
                        this.getPoint().y - this.getRadius(), 
                        2*this.getRadius(), 2*this.getRadius());
-        else
+        else if()
             g.drawOval(this.getPoint().x - this.getRadius(), 
                        this.getPoint().y - this.getRadius(), 
                        2*this.getRadius(), 2*this.getRadius());
+        else
+            g.drawI
     }
     
     @Override
@@ -49,5 +57,15 @@ public class Kruh extends Tvar{
         this.point.x += 1;
         if (this.point.x - radius >= p.getWidth())
             this.point.x = 0 - radius;
+    }
+
+    @Override
+    public boolean detect() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setActive() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

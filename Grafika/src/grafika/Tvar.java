@@ -15,6 +15,7 @@ abstract class Tvar {
     protected Point point;
     protected Color color;
     protected boolean fill;
+    protected boolean active;
     public Tvar(int x,int y,boolean fill){
         point = new Point(x,y);
         int red = (int)Math.floor(Math.random() *256);
@@ -51,6 +52,19 @@ abstract class Tvar {
     public void setColor(Color color) {
         this.color = color;
     }
+    
+    public void setActive(int curX,int curY){
+        if(this.detect(curX,curY)){
+            this.setColor(yellow);
+            active = true;
+        }
+        else{
+            active = false;
+        }
+    }
+    abstract public boolean detect();
+    
+    abstract public void setActive();
     
     abstract public void setSize(int size);
     

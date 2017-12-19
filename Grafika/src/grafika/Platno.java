@@ -32,6 +32,7 @@ public class Platno extends JComponent
     private Point p = new Point(100,100);
     ArrayList<Tvar> points;
     private Timer timer;
+    private Tvar aktivni;
     
     public Platno() {
         this.points = new ArrayList();
