@@ -11,6 +11,6 @@ import java.awt.Graphics;
  *
  * @author student
  */
-abstract public class Renderable {
+abstract public interface Renderable {
     abstract public void render(Graphics g);
 }

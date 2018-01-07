@@ -9,7 +9,6 @@ package asteroids;
  *
  * @author student
  */
-abstract public class gameObject extends Renderable{
-    abstract public void colides(int x,int y);
-    abstract public void performLogic();
+abstract public interface logicObject{
+    abstract public void performLogic(); //Provede herní logiku pro jeden snímek.
 }

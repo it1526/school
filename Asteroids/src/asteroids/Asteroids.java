@@ -8,8 +8,8 @@ public class Asteroids{
     private JFrame window;
     private Platno platno;
     
-    final int width = 640;
-    final int height = 480;
+    final int width = 800;
+    final int height = 600;
     
     public Asteroids(){
         window = new JFrame("Asteroids");
@@ -23,6 +23,7 @@ public class Asteroids{
     }
     
     public static void main(String[] args) {
+    new Asteroids();
     }
 
 }
