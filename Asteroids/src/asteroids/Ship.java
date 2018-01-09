@@ -8,6 +8,7 @@ package asteroids;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ public class Ship extends LineObject implements KeyListener, logicObject{
     private boolean thrust;
     private static final double ROTATION_QUOTIENT = 10; //Modifikitátor ryhclosti otáčení.
     private static final double FORCE = 1; //Síla způsobená motorem.
+    private ArrayList<Point> thrustEffectPoints;
+    private ArrayList<Point> thrustEffectPointsRotated;
+    private static final double SPEED_LIMIT = 24;
     
     public Ship(int x,int y){
         this.thrust = false;
@@ -39,7 +43,14 @@ public class Ship extends LineObject implements KeyListener, logicObject{
         actualOffsets = new ArrayList<>();
         for(Point p : baseOffsets)
             actualOffsets.add((Point)p.clone());
-        
+        thrustEffectPoints = new ArrayList<>();
+        thrustEffectPoints.add(new Point(9,9));
+        thrustEffectPoints.add(new Point(-9,9));
+        thrustEffectPoints.add(new Point(-9,18));
+        thrustEffectPoints.add(new Point(9,18));
+        thrustEffectPointsRotated = new ArrayList<>();
+        for(Point p : thrustEffectPoints)
+            thrustEffectPointsRotated.add((Point)p.clone());
     }
 
     @Override
@@ -53,10 +64,39 @@ public class Ship extends LineObject implements KeyListener, logicObject{
         if(thrust){
             speedX += FORCE * Math.sin(rotation);
             speedY -= FORCE * Math.cos(rotation);
+            double size = Math.sqrt(speedX*speedX+speedY*speedY); 
+            if(size > SPEED_LIMIT){
+                speedX *= SPEED_LIMIT / size;
+                speedY *= SPEED_LIMIT / size;
+            }
+                
+                
         }
         location.translate((int)speedX, (int)speedY);
     }
-
+    
+    @Override
+    public void render(Graphics g){
+        super.render(g);
+        if(thrust){
+            int x,y;
+            int xArray[] = new int [4];
+            int yArray[] = new int [4];
+            for(int i = 0;i<thrustEffectPoints.size();i++){
+                x = thrustEffectPoints.get(i).x;
+                y = thrustEffectPoints.get(i).y;
+                thrustEffectPointsRotated.get(i).x = (int) (x*Math.cos(rotation) - y*Math.sin(rotation)); 
+                thrustEffectPointsRotated.get(i).y = (int) (y*Math.cos(rotation) + x*Math.sin(rotation));
+            }
+            for(int i = 0;i<thrustEffectPointsRotated.size();i++){
+                xArray[i] = location.x+thrustEffectPointsRotated.get(i).x;
+                yArray[i] = location.y+thrustEffectPointsRotated.get(i).y;
+            }
+            g.setColor(Color.RED);
+            g.drawPolygon(new Polygon(xArray,yArray,4));
+        }
+            
+    }
     @Override
     public void keyTyped(KeyEvent e) {}
 
