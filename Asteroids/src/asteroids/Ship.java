@@ -18,11 +18,7 @@ import java.util.ArrayList;
  * @author student
  */
 public class Ship extends LineObject implements KeyListener, logicObject{
-    private double speedX;
-    private double speedY;
-    private double rotationDirection;
     private boolean thrust;
-    private static final double ROTATION_QUOTIENT = 10; //Modifikitátor ryhclosti otáčení.
     private static final double FORCE = 1; //Síla způsobená motorem.
     private ArrayList<Point> thrustEffectPoints;
     private ArrayList<Point> thrustEffectPointsRotated;
@@ -34,13 +30,11 @@ public class Ship extends LineObject implements KeyListener, logicObject{
         this.rotation = 0;
         this.speedX = 0;
         this.speedY = 0;
-        this.baseOffsets = new ArrayList<>();
         baseOffsets.add(new Point(0,-15));
         baseOffsets.add(new Point(15,15));
         baseOffsets.add(new Point(12,9));
         baseOffsets.add(new Point(-12,9));
         baseOffsets.add(new Point(-15,15));
-        actualOffsets = new ArrayList<>();
         for(Point p : baseOffsets)
             actualOffsets.add((Point)p.clone());
         thrustEffectPoints = new ArrayList<>();
@@ -55,12 +49,6 @@ public class Ship extends LineObject implements KeyListener, logicObject{
 
     @Override
     public void performLogic() {
-        rotation += rotationDirection/ROTATION_QUOTIENT;
-        
-        if(location.x < 0 || location.x > 800 || location.y < 0 || location.y > 600){ //Zobecnit později.
-            location.x = 800 - location.x;
-            location.y = 600 - location.y;
-        }
         if(thrust){
             speedX += FORCE * Math.sin(rotation);
             speedY -= FORCE * Math.cos(rotation);
@@ -68,11 +56,9 @@ public class Ship extends LineObject implements KeyListener, logicObject{
             if(size > SPEED_LIMIT){
                 speedX *= SPEED_LIMIT / size;
                 speedY *= SPEED_LIMIT / size;
-            }
-                
-                
+            }       
         }
-        location.translate((int)speedX, (int)speedY);
+        super.performLogic();
     }
     
     @Override

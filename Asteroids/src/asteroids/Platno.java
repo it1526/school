@@ -21,6 +21,8 @@ public class Platno extends JComponent implements ActionListener{
     private Ship ship;
     
     public Platno() {
+        Asteroid roid;
+        
         this.renderable = new ArrayList<>();
         this.logic = new ArrayList<>();
         this.ship = new Ship(400,300);
@@ -28,7 +30,12 @@ public class Platno extends JComponent implements ActionListener{
         logic.add(ship);
         this.setFocusable(true);
         this.addKeyListener(ship);
-        System.out.println("Laliho");
+        for(int i = 0;i<3;i++){
+            roid = new Asteroid();
+            renderable.add(roid);
+            logic.add(roid);
+        }
+            
     }
     
     public void init() {
