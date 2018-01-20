@@ -10,7 +10,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 
-public abstract class LineObject implements Renderable, logicObject{
+public abstract class LineObject implements Renderable, Logic{
     protected Point location = new Point(); //Umístění STŘEDU objektu.
     protected double rotation = 0; // Rotace objektu; 0 je severní směr; tj. nahoru.
     protected Color color = Color.WHITE;
@@ -19,7 +19,7 @@ public abstract class LineObject implements Renderable, logicObject{
     //Body neobsahují absolutní souřadnice ale souřadnice relativní k bodu "location".
     //Na body bude poté aplikována transformace rotace dle hodnoty "rotation".
     protected ArrayList<Point> actualOffsets = new ArrayList<>();; //Stejné jako výš, ale po aplikaci rotace. Přepočítáva se každý snímek v logice objektu.
-    protected double ROTATION_QUOTIENT = 10; //Modifikitátor ryhclosti otáčení.
+    protected double ROTATION_QUOTIENT = 7; //Modifikitátor ryhclosti otáčení.
     protected double speedX = 0;
     protected double speedY = 0;
     protected double rotationDirection = 0;
@@ -58,6 +58,55 @@ public abstract class LineObject implements Renderable, logicObject{
         }
         
         location.translate((int)speedX, (int)speedY);
+    }
+    
+    public ArrayList getLines(){
+        ArrayList<Point[]> lines = new ArrayList<>();
+        Point[] array;
+        for(int i = 0;i<actualOffsets.size()-1;i++){
+            array = new Point[2];
+            array[0] = new Point();
+            array[1] = new Point();
+            array[0].x = actualOffsets.get(i  ).x + location.x;
+            array[0].y = actualOffsets.get(i  ).y + location.y;
+            array[1].x = actualOffsets.get(i+1).x + location.x;
+            array[1].y = actualOffsets.get(i+1).y + location.y;
+            lines.add(array);
+        }
+        array = new Point[2];
+        array[0] = new Point();
+        array[1] = new Point();
+        array[0].x = actualOffsets.get(actualOffsets.size()-1).x + location.x;
+        array[0].y = actualOffsets.get(actualOffsets.size()-1).y + location.y;
+        array[1].x = actualOffsets.get(0).x + location.x;
+        array[1].y = actualOffsets.get(0).y + location.y;
+        lines.add(array);
+        return lines;
+    }
+    
+    public boolean colides(LineObject x){
+        ArrayList<Point[]> thisLines = this.getLines();
+        ArrayList<Point[]> foreignLines = x.getLines();
+        
+        double denominator;
+        double numerator1;
+        double numerator2;
+        double r;
+        double s;
+        
+        
+        for(Point[] t : thisLines)
+            for(Point[] f: foreignLines){
+                denominator = (((t[1].x - t[0].x)*(f[1].y - f[0].y))-((t[1].y-t[0].y)*(f[1].x-f[0].x)));
+                numerator1 = (((t[0].y-f[0].y)*(f[1].x-f[0].x))-((t[0].x-f[0].x)*(f[1].y-f[0].y)));
+                numerator2 = (((t[0].y-f[0].y)*(t[1].x-t[0].x))-((t[0].x-f[0].x)*(t[1].y-t[0].y)));
+                if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+                r = numerator1 / denominator;
+                s = numerator2 / denominator;
+                if((r >= 0 && r <= 1) && (s >= 0 && s <= 1))
+                    return true;
+            }
+        return false;
     }
     
 }

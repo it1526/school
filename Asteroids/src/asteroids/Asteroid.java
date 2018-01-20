@@ -14,27 +14,54 @@ import java.util.Arrays;
  */
 public class Asteroid extends LineObject{
     
-    public Asteroid(){
-        this.location.x = (int) (Math.random() * 800);
-        this.location.y = (int) (Math.random() * 400);
-        double[] angles = new double[8];
-        for(int i=0;i<8;i++){
-            angles[i] = Math.random() * Math.PI * 2;
+    static final int SCORE_VALUE = 100;
+    static final int SPLITS = 8;
+    static final double SPLIT_ANGLE = (Math.PI*2) / SPLITS;
+    static final int MAX_SPEED = 12;
+    static final int MAX_ITERATIONS = 2;
+    static final int DEBRIS_COUNT = 3;
+    static final int DEBRIS_SCATTER_MAX_DISTANCE = 10;
+    static final int MAX_POINT_DISTANCE = 50;
+    static final int MIN_POINT_DISTANCE = 15;
+    static final int ITERATION_QUOTIENT = 2;
+    private final int iterationCount;
+    private final Platno rootReference;
+    public Asteroid(int x,int y,int iterationCount,Platno rootReference){
+        this.rootReference = rootReference;
+        this.iterationCount = iterationCount;
+        this.location.x = x;
+        this.location.y = y;
+        double[] angles = new double[SPLITS];
+        for(int i=0;i<SPLITS;i++){
+            angles[i] = Math.random() * ( (SPLIT_ANGLE  * (i+1)) - (SPLIT_ANGLE * i) ) + (SPLIT_ANGLE * i);
         }
         Arrays.sort(angles);
-        for(int i=0;i<8;i++){
+        for(int i=0;i<SPLITS;i++){
             baseOffsets.add(new Point(
-            (int) ((Math.random() * (50 - 15) + 15) * Math.cos(angles[i])),
-            (int) ((Math.random() * (50 - 15) + 15) * Math.sin(angles[i]))        
+            (int) ((Math.random() * (MAX_POINT_DISTANCE - MIN_POINT_DISTANCE) + MIN_POINT_DISTANCE) * Math.cos(angles[i]))/(iterationCount == 0?1:iterationCount*ITERATION_QUOTIENT),
+            (int) ((Math.random() * (MAX_POINT_DISTANCE - MIN_POINT_DISTANCE) + MIN_POINT_DISTANCE) * Math.sin(angles[i]))/(iterationCount == 0?1:iterationCount*ITERATION_QUOTIENT)        
             ));
         }
         for(int i = 0;i<8;i++){
             actualOffsets.add(new Point());
         }
         do{
-            speedX = Math.random() * 12;
-            speedY = Math.random() * 12;
-        }while(Math.sqrt(speedX*speedX+speedY*speedY) > 12);
+            speedX = Math.random() * MAX_SPEED;
+            speedY = Math.random() * MAX_SPEED;
+        }while(Math.sqrt(speedX*speedX+speedY*speedY) > MAX_SPEED);
+    }
+    
+    public void destroy(){
+        if(iterationCount < MAX_ITERATIONS){
+            for(int i=0;i<DEBRIS_COUNT;i++)
+                rootReference.birthList.add(new Asteroid(
+                                    (int)(location.x+(Math.random() * (2*DEBRIS_SCATTER_MAX_DISTANCE)-DEBRIS_SCATTER_MAX_DISTANCE)),
+                                    (int)(location.y+(Math.random() * (2*DEBRIS_SCATTER_MAX_DISTANCE)-DEBRIS_SCATTER_MAX_DISTANCE)),
+                                    iterationCount+1,
+                                    rootReference));
+        }
+        rootReference.GM.addScore(SCORE_VALUE);
+        rootReference.killList.add(this);
     }
     
 }

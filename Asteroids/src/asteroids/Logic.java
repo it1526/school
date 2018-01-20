@@ -9,6 +9,6 @@ package asteroids;
  *
  * @author student
  */
-abstract public interface logicObject{
+abstract public interface Logic{
     abstract public void performLogic(); //Provede herní logiku pro jeden snímek.
 }

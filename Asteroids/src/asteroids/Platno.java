@@ -10,32 +10,30 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
 public class Platno extends JComponent implements ActionListener{
     
-    ArrayList<Renderable> renderable;
-    ArrayList<logicObject> logic;
+    public final ArrayList<Renderable> renderable;
+    public final ArrayList<Logic> logic;
+    public final ArrayList<Object> killList;
+    public final ArrayList<Object> birthList;
+    public final ArrayList<Renderable> birthRenderList;
+    public final GameMaster GM;
     private Timer timer;
-    private Ship ship;
     
-    public Platno() {
-        Asteroid roid;
-        
+    public Platno() {       
         this.renderable = new ArrayList<>();
         this.logic = new ArrayList<>();
-        this.ship = new Ship(400,300);
-        renderable.add(ship);
-        logic.add(ship);
+        this.killList = new ArrayList<>();
+        this.birthList = new ArrayList<>();
+        this.birthRenderList = new ArrayList<>();
         this.setFocusable(true);
-        this.addKeyListener(ship);
-        for(int i = 0;i<3;i++){
-            roid = new Asteroid();
-            renderable.add(roid);
-            logic.add(roid);
-        }
-            
+        GM = new GameMaster(this);
+        logic.add(GM);
+        GM.init();
     }
     
     public void init() {
@@ -54,9 +52,32 @@ public class Platno extends JComponent implements ActionListener{
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        for(logicObject o : logic)
+        for(Object o : killList)
+            destroy(o);
+        for(Object o : birthList)
+            create(o);
+        for(Renderable o : birthRenderList)
+            renderable.add(o);
+        killList.clear();
+        birthList.clear();
+        for(Logic o : logic)
             o.performLogic();
         repaint();
     }
     
+    private void create(Object object){
+        renderable.add((Renderable) object);
+        logic.add((Logic) object);
+    }
+    
+    private void destroy(Object object){
+        Iterator<Renderable> i = renderable.iterator();
+        while (i.hasNext())
+            if(i.next().equals(object))
+                i.remove();
+        Iterator<Logic> j = logic.iterator();
+        while (j.hasNext())
+            if(j.next().equals(object))
+                j.remove();
+    }
 }

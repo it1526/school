@@ -4,14 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import javax.swing.JFrame;
 
-public class Asteroids{
+public class Main{
     private JFrame window;
     private Platno platno;
     
     final int width = 800;
     final int height = 600;
     
-    public Asteroids(){
+    public Main(){
         window = new JFrame("Asteroids");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(width, height);
@@ -23,7 +23,7 @@ public class Asteroids{
     }
     
     public static void main(String[] args) {
-    new Asteroids();
+    new Main();
     }
 
 }

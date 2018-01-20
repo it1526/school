@@ -11,20 +11,29 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.time.Clock;
 import java.util.ArrayList;
 
 /**
  *
  * @author student
  */
-public class Ship extends LineObject implements KeyListener, logicObject{
+public class Ship extends LineObject implements KeyListener, Logic{
     private boolean thrust;
     private static final double FORCE = 1; //Síla způsobená motorem.
     private ArrayList<Point> thrustEffectPoints;
     private ArrayList<Point> thrustEffectPointsRotated;
     private static final double SPEED_LIMIT = 24;
+    private final Platno rootReference;
+    private long gracePeriodStart;
+    private boolean gracePeriod;
+    private static final int GRACE_PERIOD_DURATION = 2000;
     
-    public Ship(int x,int y){
+    public Ship(int x,int y,Platno rootReference){
+        this.rootReference = rootReference;
+        this.color = Color.GRAY;
+        this.gracePeriodStart = Clock.systemUTC().millis();
+        this.gracePeriod = true;
         this.thrust = false;
         this.location = new Point(x,y);
         this.rotation = 0;
@@ -49,6 +58,7 @@ public class Ship extends LineObject implements KeyListener, logicObject{
 
     @Override
     public void performLogic() {
+        //Pohyb
         if(thrust){
             speedX += FORCE * Math.sin(rotation);
             speedY -= FORCE * Math.cos(rotation);
@@ -59,6 +69,26 @@ public class Ship extends LineObject implements KeyListener, logicObject{
             }       
         }
         super.performLogic();
+        
+         //Kolize
+        if(gracePeriod && Clock.systemUTC().millis() - gracePeriodStart > GRACE_PERIOD_DURATION){
+            gracePeriod = false;
+            this.color = Color.WHITE;    
+        }
+        if(!gracePeriod){
+            Asteroid asteroid;
+            for(Logic o : rootReference.logic){
+                if (o.getClass() == Asteroid.class){
+                    asteroid = (Asteroid)o;
+                    if(colides(asteroid)){
+                        rootReference.killList.add(this);
+                        rootReference.birthRenderList.add(new TextElement("RIP",Color.RED,location.x,location.y));
+                        rootReference.removeKeyListener(this);
+                    }
+
+                }
+            }
+        }
     }
     
     @Override
@@ -83,6 +113,12 @@ public class Ship extends LineObject implements KeyListener, logicObject{
         }
             
     }
+    
+    public void restartGrace(){
+        gracePeriod = true;
+        gracePeriodStart = Clock.systemUTC().millis();
+    }
+    
     @Override
     public void keyTyped(KeyEvent e) {}
 
@@ -100,6 +136,7 @@ public class Ship extends LineObject implements KeyListener, logicObject{
                 break;
             case KeyEvent.VK_R:
                 location.setLocation(400,200);
+                break;
         }
         
     }
@@ -114,6 +151,8 @@ public class Ship extends LineObject implements KeyListener, logicObject{
             case KeyEvent.VK_UP:
                 thrust = false;
                 break;
+            case KeyEvent.VK_SPACE:
+                rootReference.birthList.add(new Projectile(location.x,location.y,rotation,rootReference));
         }
     }
     
