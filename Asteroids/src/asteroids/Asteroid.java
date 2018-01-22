@@ -6,7 +6,6 @@
 package asteroids;
 
 import java.awt.Point;
-import java.util.Arrays;
 
 /**
  *
@@ -35,7 +34,6 @@ public class Asteroid extends LineObject{
         for(int i=0;i<SPLITS;i++){
             angles[i] = Math.random() * ( (SPLIT_ANGLE  * (i+1)) - (SPLIT_ANGLE * i) ) + (SPLIT_ANGLE * i);
         }
-        Arrays.sort(angles);
         for(int i=0;i<SPLITS;i++){
             baseOffsets.add(new Point(
             (int) ((Math.random() * (MAX_POINT_DISTANCE - MIN_POINT_DISTANCE) + MIN_POINT_DISTANCE) * Math.cos(angles[i]))/(iterationCount == 0?1:iterationCount*ITERATION_QUOTIENT),

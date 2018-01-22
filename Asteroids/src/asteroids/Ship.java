@@ -134,9 +134,6 @@ public class Ship extends LineObject implements KeyListener, Logic{
             case KeyEvent.VK_UP:
                 thrust = true;
                 break;
-            case KeyEvent.VK_R:
-                location.setLocation(400,200);
-                break;
         }
         
     }
