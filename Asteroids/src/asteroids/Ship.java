@@ -84,6 +84,7 @@ public class Ship extends LineObject implements KeyListener, Logic{
                         rootReference.killList.add(this);
                         rootReference.birthRenderList.add(new TextElement("RIP",Color.RED,location.x,location.y));
                         rootReference.removeKeyListener(this);
+                        asteroid.destroy();
                     }
 
                 }
