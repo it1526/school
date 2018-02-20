@@ -5,8 +5,10 @@
  */
 package editor;
 
+import com.sun.istack.internal.logging.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -21,6 +23,9 @@ public class MainWindow extends javax.swing.JFrame {
     private File soubor;
     private String kodovani = "UTF-8";
     private final Soubor txtSoubor = new Soubor();
+    private String replacedText;
+    private String replaceWithText;
+    
     /**
      * Creates new form MainWindow
      */
@@ -188,6 +193,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuReplace.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
         menuReplace.setText("Replace");
+        menuReplace.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuReplaceActionPerformed(evt);
+            }
+        });
         menuEdit.add(menuReplace);
         menuEdit.add(jSeparator4);
 
@@ -230,6 +240,11 @@ public class MainWindow extends javax.swing.JFrame {
         menuSettings.add(menuBackgroundColor);
 
         menuFont.setText("Font");
+        menuFont.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuFontActionPerformed(evt);
+            }
+        });
         menuSettings.add(menuFont);
 
         jMenu2.setText("Code page");
@@ -342,9 +357,43 @@ public class MainWindow extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Nastala chby při otevření souboru!","Chyba!",JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_menuSaveFileAsActionPerformed
-    
-    private String informaceOSouboru(){
+
+    private void menuReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuReplaceActionPerformed
+        ReplaceDialog replaceDialog = new ReplaceDialog(this,true);
+        if (replaceDialog.showDialog().equals("Replace")){
+            textEditor.requestFocusInWindow();
+            replacedText = replaceDialog.getReplaceText();
+            replaceWithText = replaceDialog.getReplaceWithText();
+            this.searchOperation(replacedText,replaceWithText,true);
+        }
+    }//GEN-LAST:event_menuReplaceActionPerformed
+
+    private void menuFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFontActionPerformed
         
+    }//GEN-LAST:event_menuFontActionPerformed
+    
+    private void searchOperation(String findText, String replaceWithText,Boolean replace){
+        textEditor.requestFocusInWindow();
+        int startFrom = (textEditor.getCaretPosition() == textEditor.getDocument().getLength())
+                ? 0 : textEditor.getCaretPosition();
+        int max = textEditor.getDocument().getLength() - startFrom;
+        int searchIndex = -1;
+        try{
+            searchIndex = textEditor.getDocument().getText(startFrom, max).indexOf(foundTxt);
+        }
+        catch (BadLocationException ex){
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE,null,ex);
+        }
+        if (seachIndex != -1) {
+            textEditor.select(searchIndex + startFrom + foundTxt.lenght());
+            if (replace)
+                textEditor.replaceSelection(replaceWithText);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "String not found");
+            textEditor.setSelectionStart(-1);
+            textEditor.setSelectionEnd(-1);
+        }
     }
     
     /**
