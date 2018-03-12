@@ -5,14 +5,15 @@
  */
 package editor;
 
-import com.sun.istack.internal.logging.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.logging.Level;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 
 /**
  *
@@ -163,6 +164,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuFileInfo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
         menuFileInfo.setText("File info");
+        menuFileInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuFileInfoActionPerformed(evt);
+            }
+        });
         menuFile.add(menuFileInfo);
         menuFile.add(jSeparator2);
 
@@ -189,6 +195,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuFind.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
         menuFind.setText("Find");
+        menuFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuFindActionPerformed(evt);
+            }
+        });
         menuEdit.add(menuFind);
 
         menuReplace.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
@@ -288,7 +299,23 @@ public class MainWindow extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    private String fileInfo(){
+        String info = "";
+        info += "File name: " + soubor.getName() + "\n";
+        info += "Location: " + soubor.getParent() + "\n";
+        info += "Size: " + String.valueOf(soubor.length()) + "bytes\n";
+        info += "Rights: ";
+        info += soubor.canRead() ? "R " : "- ";
+        info += soubor.canWrite()? "W " : "- ";
+        info += soubor.canExecute()? "X\n" : "-\n";
+        info += "Hidden file: " + (soubor.isHidden() ? "yes " : "no\n");
+        Date datum = new Date();
+        datum.setTime(soubor.lastModified());
+        info += "Last modified: " + datum.toString();       
+        return info;
+    }
+    
     private void menuToolBarEnabledActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuToolBarEnabledActionPerformed
         ToolBar.setVisible(menuToolBarEnabled.isSelected());
     }//GEN-LAST:event_menuToolBarEnabledActionPerformed
@@ -359,7 +386,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_menuSaveFileAsActionPerformed
 
     private void menuReplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuReplaceActionPerformed
-        ReplaceDialog replaceDialog = new ReplaceDialog(this,true);
+        ReplaceDialog replaceDialog = new ReplaceDialog(this,true,replacedText,replaceWithText);
         if (replaceDialog.showDialog().equals("Replace")){
             textEditor.requestFocusInWindow();
             replacedText = replaceDialog.getReplaceText();
@@ -371,26 +398,34 @@ public class MainWindow extends javax.swing.JFrame {
     private void menuFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFontActionPerformed
         
     }//GEN-LAST:event_menuFontActionPerformed
+
+    private void menuFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFindActionPerformed
+        replacedText = JOptionPane.showInputDialog(this, "Find what:");
+        this.searchOperation(replacedText,null,false);
+    }//GEN-LAST:event_menuFindActionPerformed
+
+    private void menuFileInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFileInfoActionPerformed
+        JOptionPane.showMessageDialog(this,fileInfo(),"Info",JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_menuFileInfoActionPerformed
     
-    private void searchOperation(String findText, String replaceWithText,Boolean replace){
+    private void searchOperation(String foundTxt,String replacedTxt, Boolean replace){
         textEditor.requestFocusInWindow();
-        int startFrom = (textEditor.getCaretPosition() == textEditor.getDocument().getLength())
-                ? 0 : textEditor.getCaretPosition();
+        int startFrom = (textEditor.getCaretPosition() == textEditor.getDocument().getLength()) ? 0 : textEditor.getCaretPosition();
         int max = textEditor.getDocument().getLength() - startFrom;
         int searchIndex = -1;
-        try{
+        try {
             searchIndex = textEditor.getDocument().getText(startFrom, max).indexOf(foundTxt);
+        } catch (BadLocationException ex) {
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE,null,ex);
         }
-        catch (BadLocationException ex){
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE,null,ex);
+        if (searchIndex != -1) {
+            textEditor.select(searchIndex + startFrom, searchIndex + startFrom + foundTxt.length());
+            if(replace) {
+                textEditor.replaceSelection(replacedTxt);
+            }
         }
-        if (seachIndex != -1) {
-            textEditor.select(searchIndex + startFrom + foundTxt.lenght());
-            if (replace)
-                textEditor.replaceSelection(replaceWithText);
-        }
-        else{
-            JOptionPane.showMessageDialog(this, "String not found");
+        else {
+            JOptionPane.showMessageDialog(this, "Řetězec nebyl nalezen");
             textEditor.setSelectionStart(-1);
             textEditor.setSelectionEnd(-1);
         }
