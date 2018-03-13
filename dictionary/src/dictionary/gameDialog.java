@@ -7,6 +7,7 @@ package dictionary;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
@@ -27,15 +28,24 @@ public class gameDialog extends javax.swing.JDialog {
     
     private ArrayList<Entry> data = new ArrayList<>();
     private int wordCount;
+    private int right = 0;
+    private int wrong = 0;
+    private int unanswered = 0;
+    private final java.awt.Frame parent;
+    private final int MAX_WORDS; 
     
     public gameDialog(java.awt.Frame parent, boolean modal, TableModel model) {
         super(parent, modal);
+        this.parent = parent;
         initComponents();
-        for(int i = 0;i<model.getRowCount();i++){
-            data.add(new Entry((String)model.getValueAt(2, i),(String)model.getValueAt(2, i)));
+        MAX_WORDS = buggerUser(model.getRowCount());
+        for(int i = 0;i<MAX_WORDS;i++){
+            data.add(new Entry((String)model.getValueAt(i, 2),(String)model.getValueAt(i, 1)));
         }
         Collections.shuffle(data);
-        wordCount = -1;
+        wordCount = 0;
+        jTextField1.setText(data.get(wordCount).cs);
+        this.setVisible(true);
     }
 
     /**
@@ -108,14 +118,50 @@ public class gameDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    private int buggerUser(int max){
+        
+        int number;
+        String answer;
+        do{
+            answer = JOptionPane.showInputDialog("Zadejte z kolika slov chcete být vyzkoušeni (Max:"+max+")?");
+            try{
+                number = Integer.parseInt(answer);
+            }
+            catch(NumberFormatException e){
+                number = -1;
+            }
+            if(number > 0 && number <= max)
+                return number;
+            else
+                JOptionPane.showMessageDialog(parent,"Neplatný vstup!","I/O ERROR",JOptionPane.ERROR_MESSAGE);
+        }while(true);
+    }
+    
     private void nextWord(){
+        if(jTextField2.getText().equals(data.get(wordCount).en))
+            right++;
+        else if(jTextField2.getText().equals(""))
+            unanswered++;
+        else
+            wrong++;
         wordCount++;
+        if (wordCount >= data.size())
+            exit();
+        else
+            jTextField1.setText(data.get(wordCount).cs);
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        nextWord();
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    
+    
+    private void exit(){
+        JOptionPane.showMessageDialog(this, "Správně: "+right+"\nŠpatně: "+wrong+"\nNeodpovězeno: "+unanswered);
+        this.setVisible(false);
+        parent.setVisible(true);
+        dispose();
+    }
     /**
      * @param args the command line arguments
      */
