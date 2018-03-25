@@ -266,12 +266,14 @@ public class OknoSlovnik extends javax.swing.JFrame {
         menuJSON = new javax.swing.JMenuItem();
         menuXML = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem1 = new javax.swing.JMenuItem();
         menuExit = new javax.swing.JMenuItem();
         menuData = new javax.swing.JMenu();
         menuInsert = new javax.swing.JMenuItem();
         menuUpdate = new javax.swing.JMenuItem();
         menuDelete = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -395,7 +397,7 @@ public class OknoSlovnik extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pocetZaznamu)
-                .addContainerGap(403, Short.MAX_VALUE))
+                .addContainerGap(414, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -445,14 +447,6 @@ public class OknoSlovnik extends javax.swing.JFrame {
         menuFile.add(menuExport);
         menuFile.add(jSeparator2);
 
-        jMenuItem1.setText("Test");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        menuFile.add(jMenuItem1);
-
         menuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
         menuExit.setMnemonic('k');
         menuExit.setText("Konec");
@@ -499,6 +493,26 @@ public class OknoSlovnik extends javax.swing.JFrame {
         menuData.add(menuDelete);
 
         jMenuBar1.add(menuData);
+
+        jMenu1.setText("Hra");
+
+        jMenuItem1.setText("Test");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("Zobrazit tabulku skóre");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -676,8 +690,13 @@ public class OknoSlovnik extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         this.setVisible(false);
-        gameDialog dialog = new gameDialog(this,true,tabulka.getModel());
+        gameDialog dialog = new gameDialog(this,true,tabulka.getModel(),spojeni);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        this.setVisible(false);
+    ScoreDisplay dialog = new ScoreDisplay(this,true,spojeni);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -715,8 +734,10 @@ public class OknoSlovnik extends javax.swing.JFrame {
     private javax.swing.JButton delete;
     private javax.swing.JTextField findText;
     private javax.swing.JButton insert;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

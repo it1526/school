@@ -134,6 +134,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel3.setText("jLabel3");
         statusPanel.add(jLabel3);
 
+        textEditor.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                textEditorCaretUpdate(evt);
+            }
+        });
         jScrollPane2.setViewportView(textEditor);
 
         menuFile.setText("File");
@@ -396,7 +401,10 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_menuReplaceActionPerformed
 
     private void menuFontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFontActionPerformed
-        
+        FontDialog fontDialog = new FontDialog(this,true,textEditor.getFont());
+        if(fontDialog.showDialog().equals("Accept")){
+            textEditor.setFont(fontDialog.getFont());
+        }
     }//GEN-LAST:event_menuFontActionPerformed
 
     private void menuFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFindActionPerformed
@@ -407,6 +415,29 @@ public class MainWindow extends javax.swing.JFrame {
     private void menuFileInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuFileInfoActionPerformed
         JOptionPane.showMessageDialog(this,fileInfo(),"Info",JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_menuFileInfoActionPerformed
+
+    private void textEditorCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_textEditorCaretUpdate
+        String text = textEditor.getText();
+        int wordCount = 0;
+        int lineCount = 1;
+        boolean state = false;
+        for(int i=0;i<text.length();i++){
+            if(state){
+                if(Character.isWhitespace(text.charAt(i))){
+                    state = false;
+                }
+            }
+            else{
+                if(!Character.isWhitespace(text.charAt(i))){
+                    state = true;
+                    wordCount++;
+                }
+            }
+            if(text.charAt(i) == '\n')
+                lineCount++;
+        }
+        jLabel3.setText("<html>Character count: "+text.length()+"<br>Word count: "+wordCount+"<br>Line count: "+lineCount+"</html>");
+    }//GEN-LAST:event_textEditorCaretUpdate
     
     private void searchOperation(String foundTxt,String replacedTxt, Boolean replace){
         textEditor.requestFocusInWindow();

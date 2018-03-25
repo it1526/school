@@ -5,6 +5,9 @@
  */
 package dictionary;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JOptionPane;
@@ -33,9 +36,11 @@ public class gameDialog extends javax.swing.JDialog {
     private int unanswered = 0;
     private final java.awt.Frame parent;
     private final int MAX_WORDS; 
+    private final Connection spojeni;
     
-    public gameDialog(java.awt.Frame parent, boolean modal, TableModel model) {
+    public gameDialog(java.awt.Frame parent, boolean modal, TableModel model, Connection spojeni) {
         super(parent, modal);
+        this.spojeni = spojeni;
         this.parent = parent;
         initComponents();
         MAX_WORDS = buggerUser(model.getRowCount());
@@ -158,6 +163,21 @@ public class gameDialog extends javax.swing.JDialog {
     
     private void exit(){
         JOptionPane.showMessageDialog(this, "Správně: "+right+"\nŠpatně: "+wrong+"\nNeodpovězeno: "+unanswered);
+        if(JOptionPane.showConfirmDialog(this, "Chcete uložit Vaše výsledky?","Otázka",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+            try{
+                PreparedStatement dotaz = spojeni.prepareStatement("INSERT INTO skore (jmeno,pocet_spravne,pocet_spatne,pocet_neodpovezeno) VALUES (?, ?, ?, ?)");
+                dotaz.setString(1, JOptionPane.showInputDialog("Zadejte jméno pod kterým bude uloženo Vaše skóre. (Zdvořile Vás prosím: neprovádějte útok SQL injection.)"));
+                dotaz.setString(2, Integer.toString(right));
+                dotaz.setString(3, Integer.toString(wrong));
+                dotaz.setString(4, Integer.toString(unanswered));
+                dotaz.execute();
+                JOptionPane.showMessageDialog(this, "Vaše skóre bylo uloženo úspěšně.");
+            }
+            catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Chyba při komunikaci s databází", "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        }
         this.setVisible(false);
         parent.setVisible(true);
         dispose();
