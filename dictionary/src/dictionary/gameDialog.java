@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
@@ -29,13 +30,13 @@ public class gameDialog extends javax.swing.JDialog {
         }
     }
     
-    private ArrayList<Entry> data = new ArrayList<>();
+    private List<Entry> data = new ArrayList<>();
     private int wordCount;
     private int right = 0;
     private int wrong = 0;
     private int unanswered = 0;
     private final java.awt.Frame parent;
-    private final int MAX_WORDS; 
+    private final int words; 
     private final Connection spojeni;
     
     public gameDialog(java.awt.Frame parent, boolean modal, TableModel model, Connection spojeni) {
@@ -43,11 +44,12 @@ public class gameDialog extends javax.swing.JDialog {
         this.spojeni = spojeni;
         this.parent = parent;
         initComponents();
-        MAX_WORDS = buggerUser(model.getRowCount());
-        for(int i = 0;i<MAX_WORDS;i++){
+        words = buggerUser(model.getRowCount());
+        for(int i = 0;i<model.getRowCount();i++){
             data.add(new Entry((String)model.getValueAt(i, 2),(String)model.getValueAt(i, 1)));
         }
         Collections.shuffle(data);
+        data = data.subList(0, words);
         wordCount = 0;
         jTextField1.setText(data.get(wordCount).cs);
         this.setVisible(true);
